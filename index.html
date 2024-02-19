@@ -120,6 +120,160 @@
 
     -hello elementor them and elementor plugin install and use slider....
 
+    ========================================================================================================================================
+    <!-- My code library -->
+	<!-- Wordpress code Elementor whithout pro Template create short code and Woocommerce website searchbar and categery dropdown button short code create code fnction.php me code add karne ka -->
+	
+	<!-- custom template code -->
+	<?php 
+	// star
+		function my_elementor_template_shortcode($atts) {
+		    // Define default attributes and merge with user-defined attributes
+		    $atts = shortcode_atts(
+		        array(
+		            'template_id' => 98, // Default template ID
+		        ),
+		        $atts,
+		        'my_section_template'
+		    );
+
+		    // Start output buffering
+		    ob_start();
+
+		    // Get the Elementor template content for the specified template ID
+		    echo \Elementor\Plugin::$instance->frontend->get_builder_content_for_display($atts['template_id']);
+
+		    // Return the buffered content
+		    return ob_get_clean();
+		}
+		add_shortcode('my_section_template', 'my_elementor_template_shortcode');
+
+
+		function enqueue_theme_styles() {
+		    wp_enqueue_style('theme-style', get_stylesheet_uri());
+		}
+		add_action('wp_enqueue_scripts', 'enqueue_theme_styles');
+	// end
+	/* Jo shortcode create hota hai vo 
+	[my_section_template template_id=98]
+	*/
+	?>
+
+
+	<!-- woocommerce serch baar and categery dropdown bottun   -->
+	<?php 
+	// start 
+		function woocommerce_search_with_category_shortcode() {
+		    ob_start(); ?>
+		    <form role="search" method="get" class="woocommerce-product-search" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+		        <label class="screen-reader-text" for="woocommerce-product-search-field"><?php esc_html_e( 'Search for:', 'woocommerce' ); ?></label>
+		        <input type="search" id="woocommerce-product-search-field" class="search-field" placeholder="<?php echo esc_attr__( 'Search products&hellip;', 'woocommerce' ); ?>" value="<?php echo get_search_query(); ?>" name="s" />
+		        <select name="product_cat" id="product_cat" class="product-cat-dropdown">
+		            <option value=""><?php echo esc_attr__( 'Select a category', 'woocommerce' ); ?></option>
+		            <?php
+		                $product_categories = get_terms( 'product_cat' );
+		                foreach ( $product_categories as $category ) {
+		                    echo '<option value="' . esc_attr( $category->slug ) . '">' . esc_html( $category->name ) . '</option>';
+		                }
+		            ?>
+		        </select>
+		        <button type="submit" value="<?php echo esc_attr_x( 'Search', 'submit button', 'woocommerce' ); ?>"><?php echo esc_html_x( 'Search', 'submit button', 'woocommerce' ); ?></button>
+		        <input type="hidden" name="post_type" value="product" />
+		    </form>
+		    <?php
+		    return ob_get_clean();
+		}
+		add_shortcode( 'woocommerce_search_with_category', 'woocommerce_search_with_category_shortcode' );
+		function woocommerce_product_category_dropdown_shortcode( $atts ) {
+		    $atts = shortcode_atts( array(
+		        'taxonomy' => 'product_cat',
+		        'name'     => 'product_cat',
+		        'class'    => '',
+		        'orderby'  => 'name',
+		        'show_option_none' => '',
+		        'selected' => '',
+		    ), $atts );
+		    ob_start();
+		    // Start constructing the select element
+		    $dropdown = '<select name="' . esc_attr( $atts['name'] ) . '" class="' . esc_attr( $atts['class'] ) . '">';
+		    // Add the "All categories" option
+		    $dropdown .= '<option value="">' . esc_html__( 'All Categories', 'textdomain' ) . '</option>';
+		    // Fetch the rest of the categories
+		    $dropdown .= wp_dropdown_categories( array(
+		        'taxonomy'         => $atts['taxonomy'],
+		        'orderby'          => $atts['orderby'],
+		        'hierarchical'     => 1,
+		        'show_option_none' => $atts['show_option_none'],
+		        'hide_empty'       => 0,
+		        'selected'         => $atts['selected'],
+		        'echo'             => 0, // We're capturing the output instead of echoing it directly
+		    ) );
+		    // Close the select element
+		    $dropdown .= '</select>';
+		    // Clean the buffer and return the dropdown HTML
+		    ob_end_clean();
+		    return $dropdown;
+		}
+		add_shortcode( 'product_category_dropdown', 'woocommerce_product_category_dropdown_shortcode' );
+		// Custom shortcode to display WooCommerce search bar and product categories dropdown
+		function custom_woocommerce_search_and_category_dropdown_shortcode() {
+		    ob_start(); ?>
+		    <form role="search" method="get" class="woocommerce-product-search" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+		        <div class="woocommerce-product-search">
+		            <div class="select-wrapper">
+		                <select name="product_cat" id="product_cat" class="dropdown_product_cat">
+		                    <option value=""><?php echo __('All Categories', 'woocommerce'); ?></option>
+		                    <?php
+		                    $product_categories = get_terms( 'product_cat', array(
+		                        'hide_empty' => 1,
+		                    ) );
+		                    if ( $product_categories ) {
+		                        foreach ( $product_categories as $product_category ) {
+		                            echo '<option value="' . esc_attr( $product_category->slug ) . '">' . esc_html( $product_category->name ) . '</option>';
+		                        }
+		                    }
+		                    ?>
+		                </select>
+		            </div>
+		        </div>
+		    </form>
+		    <?php
+		    return ob_get_clean();
+		}
+		add_shortcode('woocommerce_search_and_category_dropdown', 'custom_woocommerce_search_and_category_dropdown_shortcode');
+		// Custom shortcode to display WooCommerce search bar and product categories dropdown
+		function custom_woocommerce_search_and_category_dropdown_shortcode_2() {
+		    ob_start(); ?>
+		    <form role="search" method="get" class="woocommerce-product-search" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+		        <div class="woocommerce-product-search">
+		            <div class="select-wrapper">
+		                <select name="product_cat" id="product_cat" class="dropdown_product_cat">
+		                    <option value=""><?php echo __('Categories', 'woocommerce'); ?></option>
+		                    <?php
+		                    $product_categories = get_terms( 'product_cat', array(
+		                        'hide_empty' => 1,
+		                    ) );
+		                    if ( $product_categories ) {
+		                        foreach ( $product_categories as $product_category ) {
+		                            echo '<option value="' . esc_attr( $product_category->slug ) . '">' . esc_html( $product_category->name ) . '</option>';
+		                        }
+		                    }
+		                    ?>
+		                </select>
+		            </div>
+		        </div>
+		    </form>
+		    <?php
+		    return ob_get_clean();
+		}
+		add_shortcode('woocommerce_search_and_category_dropdown_2', 'custom_woocommerce_search_and_category_dropdown_shortcode_2');
+		// end
+		/* Jo shortcode create hota hai vo 
+		[woocommerce_search_with_category]
+		[woocommerce_search_and_category_dropdown]
+		*/
+		?>
+    
 </body>
 
 </html>
